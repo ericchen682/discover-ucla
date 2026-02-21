@@ -25,3 +25,137 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* Force admin page to always use dark text on light backgrounds (avoids white-on-white in dark mode) */
+.admin-light {
+  color: #333;
+}
+
+/* Force calendar to always use light theme so text is visible (avoids white-on-white in dark mode) */
+.calendar-light,
+.calendar-light .rbc-calendar,
+.calendar-light .rbc-header,
+.calendar-light .rbc-toolbar,
+.calendar-light .rbc-time-view,
+.calendar-light .rbc-day-slot,
+.calendar-light .rbc-label,
+.calendar-light .rbc-event,
+.calendar-light .rbc-event-content,
+.calendar-light .rbc-show-more,
+.calendar-light .rbc-month-view,
+.calendar-light .rbc-date-cell,
+.calendar-light .rbc-row-segment {
+  color: #333 !important;
+}
+.calendar-light .rbc-event {
+  background-color: #2774AE;
+  color: #fff !important;
+  border-color: #1a5a8a;
+}
+.calendar-light .rbc-event-content {
+  color: #fff !important;
+}
+.calendar-light .rbc-off-range-bg {
+  background-color: #f5f5f5;
+}
+.calendar-light .rbc-today {
+  background-color: #e8f4fc;
+}
+.calendar-light .rbc-toolbar {
+  padding: 6px 0;
+  min-height: 36px;
+}
+.calendar-light .rbc-toolbar button {
+  color: #333 !important;
+  padding: 4px 10px;
+  font-size: 0.875rem;
+}
+.calendar-light .rbc-toolbar-label {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.calendar-light .rbc-header {
+  background-color: #f0f0f0;
+  color: #333 !important;
+  border-color: #ddd;
+  padding: 6px 3px;
+  font-size: 0.875rem;
+}
+
+/* Week view: compact, clean date row (15 Sun, 16 Mon, ...) */
+.calendar-light .rbc-time-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid #e0e0e0;
+  overflow: visible;
+}
+.calendar-light .rbc-time-header-content {
+  border-left-color: #e5e5e5;
+  overflow: visible;
+}
+.calendar-light .rbc-time-header .rbc-row {
+  min-height: 24px;
+}
+.calendar-light .rbc-time-header .rbc-header {
+  padding: 3px 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: none;
+  border-left: 1px solid #e5e5e5;
+  background-color: #f8f9fa;
+  overflow: visible;
+  line-height: 1.2;
+}
+.calendar-light .rbc-time-header .rbc-header + .rbc-header {
+  border-left: 1px solid #e5e5e5;
+}
+.calendar-light .rbc-time-header-gutter {
+  min-width: 50px;
+  min-height: 24px;
+  border-bottom: none;
+  background-color: #f8f9fa;
+}
+/* Remove two blank rows below dates: all-day section in week header reserves minRows: 2; collapse when empty */
+.calendar-light .rbc-time-header .rbc-allday-cell {
+  max-height: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: none;
+  visibility: hidden;
+}
+.calendar-light .rbc-time-slot .rbc-label {
+  color: #666 !important;
+}
+.calendar-light .rbc-show-more {
+  color: #2774AE !important;
+}
+
+/* Ensure week/day view time grid can scroll: calendar root must be a flex column so height flows down */
+.calendar-light .rbc-calendar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+.calendar-light .rbc-time-view {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.calendar-light .rbc-time-content {
+  min-height: 0;
+  overflow-y: auto !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.calendar-light .rbc-time-content::-webkit-scrollbar {
+  display: none;
+}
+/* With scrollbar hidden, do not reserve margin for it so day headers align with columns */
+.calendar-light .rbc-time-header.rbc-overflowing {
+  margin-right: 0 !important;
+}
+.calendar-light .rbc-rtl .rbc-time-header.rbc-overflowing {
+  margin-left: 0 !important;
+}
