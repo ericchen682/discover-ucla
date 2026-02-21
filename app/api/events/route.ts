@@ -1,23 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { EventCategory } from '@/lib/types'
+import { Event, EventCategory } from '@/lib/types'
+
+interface EventRow {
+  id: string
+  title: string
+  description: string | null
+  start_time: string
+  end_time: string | null
+  location: string | null
+  organizer: string | null
+  created_at: string
+  updated_at: string
+  event_categories?: { category: string }[]
+}
+
+function toEvent(row: EventRow): Event {
+  const categories = (row.event_categories ?? []).map((r) => r.category as EventCategory)
+  const { event_categories: _, ...rest } = row
+  return { ...rest, categories }
+}
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const category = searchParams.get('category') as EventCategory | null
+    const categoriesParam = searchParams.get('categories')
+    const filterCategories: EventCategory[] = categoriesParam
+      ? (categoriesParam.split(',') as EventCategory[]).filter(Boolean)
+      : []
 
-    let query = supabase
+    const { data: rows, error } = await supabase
       .from('events')
-      .select('*')
+      .select('*, event_categories(category)')
       .gte('start_time', new Date().toISOString())
       .order('start_time', { ascending: true })
-
-    if (category) {
-      query = query.eq('category', category)
-    }
-
-    const { data, error } = await query
 
     if (error) {
       console.error('Error fetching events:', error)
@@ -27,7 +43,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ data: data || [] })
+    let events: Event[] = (rows ?? []).map(toEvent)
+
+    if (filterCategories.length > 0) {
+      events = events.filter((event) =>
+        event.categories.some((c) => filterCategories.includes(c))
+      )
+    }
+
+    return NextResponse.json({ data: events })
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json(
