@@ -31,9 +31,15 @@ export async function POST(request: NextRequest) {
 
 
     // Validate required fields
-    if (!body.title || !body.start_time || !body.category) {
+    if (!body.title || !body.start_time) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, start_time, category' },
+        { error: 'Missing required fields: title, start_time' },
+        { status: 400 }
+      )
+    }
+    if (!Array.isArray(body.categories) || body.categories.length === 0) {
+      return NextResponse.json(
+        { error: 'categories must be a non-empty array' },
         { status: 400 }
       )
     }
@@ -69,7 +75,7 @@ export async function POST(request: NextRequest) {
     const supabase = createServerClient()
 
 
-    const { data, error } = await supabase
+    const { data: event, error: eventError } = await supabase
       .from('events')
       .insert([
         {
@@ -77,7 +83,6 @@ export async function POST(request: NextRequest) {
           description: body.description || null,
           start_time: body.start_time,
           end_time: body.end_time || null,
-          category: body.category,
           location: body.location || null,
           organizer: body.organizer || null,
         },
@@ -85,16 +90,32 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-
-    if (error) {
-      console.error('Error creating event:', error)
+    if (eventError || !event) {
+      console.error('Error creating event:', eventError)
       return NextResponse.json(
         { error: 'Failed to create event' },
         { status: 500 }
       )
     }
 
+    const { error: categoriesError } = await supabase
+      .from('event_categories')
+      .insert(
+        body.categories.map((category) => ({
+          event_id: event.id,
+          category,
+        }))
+      )
 
+    if (categoriesError) {
+      console.error('Error linking categories:', categoriesError)
+      return NextResponse.json(
+        { error: 'Failed to save event categories' },
+        { status: 500 }
+      )
+    }
+
+    const data = { ...event, categories: body.categories }
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
     console.error('Unexpected error:', error)
