@@ -1,6 +1,7 @@
 # discover ucla
 
-centralized hub to track events in and around ucla
+centralized hub to track events in and around ucla<br><br>
+[check it out](https://discover-ucla.vercel.app/)
 
 ## features
 
