@@ -159,3 +159,36 @@ body {
 .calendar-light .rbc-rtl .rbc-time-header.rbc-overflowing {
   margin-left: 0 !important;
 }
+
+/* Responsive: smaller calendar chrome on narrow screens */
+@media (max-width: 640px) {
+  .calendar-light .rbc-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 0;
+    min-height: 32px;
+  }
+  .calendar-light .rbc-toolbar button {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+  }
+  .calendar-light .rbc-toolbar-label {
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+  .calendar-light .rbc-time-header-gutter {
+    min-width: 40px;
+  }
+  .calendar-light .rbc-time-header .rbc-header {
+    padding: 2px 2px;
+    font-size: 0.6875rem;
+  }
+  .calendar-light .rbc-time-header .rbc-row {
+    min-height: 20px;
+  }
+  .calendar-light .rbc-time-slot .rbc-label {
+    font-size: 0.625rem;
+  }
+}

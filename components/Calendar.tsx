@@ -71,12 +71,12 @@ export default function Calendar({ events }: CalendarProps) {
         />
       </div>
       {selectedEvent && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <EventCard event={selectedEvent} />
             <button
               onClick={() => setSelectedEvent(null)}
-              className="mt-4 w-full bg-ucla-blue text-white py-2 px-4 rounded hover:bg-blue-700"
+              className="mt-4 w-full bg-ucla-blue text-white py-2 px-4 rounded hover:bg-blue-700 text-sm sm:text-base"
             >
               Close
             </button>

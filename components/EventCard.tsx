@@ -15,9 +15,8 @@ export default function EventCard({ event }: EventCardProps) {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xl font-bold text-ucla-blue">{event.title}</h3>
-     
-      <div className="space-y-1 text-sm">
+      <h3 className="text-base sm:text-xl font-bold text-ucla-blue">{event.title}</h3>
+      <div className="space-y-1 text-xs sm:text-sm">
         <div className="flex items-center gap-2">
           <span className="font-semibold">Date & Time:</span>
           <span>

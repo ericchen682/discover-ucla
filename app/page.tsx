@@ -65,14 +65,14 @@ export default function Home() {
   }
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden bg-gray-50">
-      <header className="flex-shrink-0 bg-ucla-blue text-white py-3 shadow-md">
-        <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-bold">Discover UCLA</h1>
+    <main className="h-screen flex flex-col overflow-hidden bg-gray-50 min-h-0">
+      <header className="flex-shrink-0 bg-ucla-blue text-white py-2 sm:py-3 shadow-md">
+        <div className="container mx-auto px-3 sm:px-4">
+          <h1 className="text-xl sm:text-2xl font-bold">Discover UCLA</h1>
         </div>
       </header>
 
-      <div className="container mx-auto flex-1 min-h-0 flex flex-col overflow-hidden px-4 py-4">
+      <div className="container mx-auto flex-1 min-h-0 flex flex-col overflow-hidden px-2 sm:px-4 py-2 sm:py-4">
         {loading ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="text-lg text-gray-600">Loading events...</div>

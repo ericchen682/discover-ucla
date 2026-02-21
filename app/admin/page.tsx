@@ -79,9 +79,9 @@ export default function AdminPage() {
 
   if (!isAuthenticated) {
     return (
-      <main className="admin-light min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-          <h1 className="text-2xl font-bold text-ucla-blue mb-4">Admin Login</h1>
+      <main className="admin-light min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white p-4 sm:p-8 rounded-lg shadow-md max-w-md w-full">
+          <h1 className="text-xl sm:text-2xl font-bold text-ucla-blue mb-4">Admin Login</h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
@@ -111,16 +111,16 @@ export default function AdminPage() {
 
   return (
     <main className="admin-light min-h-screen bg-gray-50">
-      <header className="bg-ucla-blue text-white py-6 shadow-md">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-blue-100 mt-1">Add and manage calendar events</p>
+      <header className="bg-ucla-blue text-white py-4 sm:py-6 shadow-md">
+        <div className="container mx-auto px-3 sm:px-4">
+          <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-blue-100 mt-1 text-sm sm:text-base">Add and manage calendar events</p>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 space-y-10">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Upcoming Events</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Upcoming Events</h2>
           {loadingEvents ? (
             <p className="text-gray-500">Loading events...</p>
           ) : events.length === 0 ? (
@@ -130,11 +130,11 @@ export default function AdminPage() {
               {events.map((event) => (
                 <li
                   key={event.id}
-                  className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-gray-50"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 px-3 py-2.5 sm:px-4 sm:py-3 hover:bg-gray-50"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-gray-900 truncate">{event.title}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-gray-900 truncate text-sm sm:text-base">{event.title}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">
                       {format(new Date(event.start_time), 'PPp')}
                       {event.categories?.length ? ` · ${event.categories.map((c) => CATEGORY_LABELS[c]).join(', ')}` : ''}
                     </p>
@@ -143,7 +143,7 @@ export default function AdminPage() {
                     type="button"
                     onClick={() => handleDelete(event.id)}
                     disabled={deletingId === event.id}
-                    className="flex-shrink-0 px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-shrink-0 self-start sm:self-center px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {deletingId === event.id ? 'Deleting...' : 'Delete'}
                   </button>
@@ -154,7 +154,7 @@ export default function AdminPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Event</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Add New Event</h2>
           <AdminForm password={password} onSuccess={() => { handleSuccess(); fetchEvents(); }} />
         </section>
       </div>

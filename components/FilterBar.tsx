@@ -17,17 +17,18 @@ export default function FilterBar({
   onClearFilters,
 }: FilterBarProps) {
   return (
-    <div className="bg-white shadow-md p-4 mb-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="font-semibold text-gray-700 mr-2">Filter by Category:</span>
-       
+    <div className="bg-white shadow-md p-3 sm:p-4 mb-3 sm:mb-4 rounded-lg">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <span className="font-semibold text-gray-700 text-sm sm:text-base w-full sm:w-auto mb-1 sm:mb-0 sm:mr-2">
+          Filter:
+        </span>
         {CATEGORIES.map((category) => {
           const isSelected = selectedCategories.includes(category)
           return (
             <button
               key={category}
               onClick={() => onCategoryToggle(category)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+              className={`px-2.5 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 isSelected
                   ? 'bg-ucla-blue text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -37,12 +38,10 @@ export default function FilterBar({
             </button>
           )
         })}
-
-
         {selectedCategories.length > 0 && (
           <button
             onClick={onClearFilters}
-            className="ml-auto px-3 py-1 text-sm text-gray-600 hover:text-gray-800 underline"
+            className="w-full sm:w-auto sm:ml-auto px-2.5 py-1 sm:px-3 text-xs sm:text-sm text-gray-600 hover:text-gray-800 underline text-left sm:text-center"
           >
             Clear Filters
           </button>

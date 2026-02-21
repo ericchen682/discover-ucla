@@ -94,7 +94,7 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-2xl mx-auto">
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
           Title *
