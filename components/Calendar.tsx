@@ -31,7 +31,7 @@ interface CalendarProps {
 
 export default function Calendar({ events }: CalendarProps) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
-  const [view, setView] = useState<View>('month')
+  const [view, setView] = useState<View>('week')
   const [date, setDate] = useState(new Date())
 
 
@@ -49,10 +49,9 @@ export default function Calendar({ events }: CalendarProps) {
     setSelectedEvent(event.resource)
   }
 
-
   return (
-    <div className="h-[600px] flex flex-col">
-      <div className="flex-1 relative">
+    <div className="calendar-light flex flex-col flex-1 min-h-0">
+      <div className="flex-1 relative min-h-0">
         <BigCalendar
           localizer={localizer}
           events={calendarEvents}
@@ -65,6 +64,10 @@ export default function Calendar({ events }: CalendarProps) {
           onNavigate={setDate}
           onSelectEvent={handleSelectEvent}
           popup
+          dayLayoutAlgorithm="no-overlap"
+          eventPropGetter={() => ({ style: { minHeight: '24px' } })}
+          scrollToTime={new Date()}
+          enableAutoScroll={true}
         />
       </div>
       {selectedEvent && (
