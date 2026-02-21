@@ -32,6 +32,13 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
     setError(null)
     setSuccess(false)
 
+    const startUTC = formData.start_time ? new Date(formData.start_time).toISOString() : ''
+    const endUTC = formData.end_time ? new Date(formData.end_time).toISOString() : undefined
+    const payload = {
+      ...formData,
+      start_time: startUTC,
+      end_time: endUTC || undefined,
+    }
 
     try {
       const response = await fetch('/api/admin/events', {
@@ -40,7 +47,7 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${password}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
 
