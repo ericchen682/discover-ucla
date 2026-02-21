@@ -14,7 +14,7 @@ export interface Event {
   description: string | null
   start_time: string
   end_time: string | null
-  category: EventCategory
+  categories: EventCategory[]
   location: string | null
   organizer: string | null
   created_at: string
@@ -26,7 +26,7 @@ export interface EventInput {
   description?: string
   start_time: string
   end_time?: string
-  category: EventCategory
+  categories: EventCategory[]
   location?: string
   organizer?: string
 }
