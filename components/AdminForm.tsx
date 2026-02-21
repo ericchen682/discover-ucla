@@ -17,7 +17,7 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
     description: '',
     start_time: '',
     end_time: '',
-    category: 'other',
+    categories: ['other'],
     location: '',
     organizer: '',
   })
@@ -58,7 +58,7 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
         description: '',
         start_time: '',
         end_time: '',
-        category: 'other',
+        categories: ['other'],
         location: '',
         organizer: '',
       })
@@ -80,6 +80,16 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleCategoryToggle = (category: EventCategory) => {
+    setFormData((prev) => {
+      const has = prev.categories.includes(category)
+      const next = has
+        ? prev.categories.filter((c) => c !== category)
+        : [...prev.categories, category]
+      return { ...prev, categories: next.length > 0 ? next : [category] }
+    })
   }
 
 
@@ -151,23 +161,28 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-            Category *
-          </label>
-          <select
-            id="category"
-            name="category"
-            required
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ucla-blue"
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {CATEGORY_LABELS[cat]}
-              </option>
-            ))}
-          </select>
+          <span className="block text-sm font-medium text-gray-700 mb-2">
+            Categories * (select at least one)
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => {
+              const isChecked = formData.categories.includes(cat)
+              return (
+                <label
+                  key={cat}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 has-[:checked]:border-ucla-blue has-[:checked]:bg-blue-50"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => handleCategoryToggle(cat)}
+                    className="rounded border-gray-300 text-ucla-blue focus:ring-ucla-blue"
+                  />
+                  <span className="text-sm">{CATEGORY_LABELS[cat]}</span>
+                </label>
+              )
+            })}
+          </div>
         </div>
 
 
