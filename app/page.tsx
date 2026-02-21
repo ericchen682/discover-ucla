@@ -21,7 +21,9 @@ export default function Home() {
       setFilteredEvents(events)
     } else {
       setFilteredEvents(
-        events.filter((event) => selectedCategories.includes(event.category))
+        events.filter((event) =>
+          event.categories.some((c) => selectedCategories.includes(c))
+        )
       )
     }
   }, [events, selectedCategories])
@@ -63,21 +65,20 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-ucla-blue text-white py-6 shadow-md">
+    <main className="h-screen flex flex-col overflow-hidden bg-gray-50">
+      <header className="flex-shrink-0 bg-ucla-blue text-white py-3 shadow-md">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold">Discover UCLA</h1>
-          <p className="text-blue-100 mt-1">Events Calendar</p>
+          <h1 className="text-2xl font-bold">Discover UCLA</h1>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto flex-1 min-h-0 flex flex-col overflow-hidden px-4 py-4">
         {loading ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex flex-1 items-center justify-center">
             <div className="text-lg text-gray-600">Loading events...</div>
           </div>
         ) : error ? (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="flex-shrink-0 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
           </div>
         ) : (
@@ -87,7 +88,7 @@ export default function Home() {
               onCategoryToggle={handleCategoryToggle}
               onClearFilters={handleClearFilters}
             />
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden bg-white rounded-lg shadow-md flex flex-col">
               <Calendar events={filteredEvents} />
             </div>
           </>
