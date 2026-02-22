@@ -1,29 +1,59 @@
 'use client'
 
 
-import { useState } from 'react'
-import { EventInput, EventCategory, CATEGORIES, CATEGORY_LABELS } from '@/lib/types'
+import { useState, useEffect } from 'react'
+import { EventInput, EventCategory, CATEGORIES, CATEGORY_LABELS, Event } from '@/lib/types'
+import { toDatetimeLocal, dateToDatetimeLocal } from '@/lib/dates'
 
 
 interface AdminFormProps {
   password: string
   onSuccess: () => void
+  /** When set, form is prefilled and submit does PATCH (edit mode) */
+  event?: Event | null
+  /** Optional initial start/end for create (e.g. from calendar slot); overridden by event */
+  initialStart?: Date
+  initialEnd?: Date
 }
 
 
-export default function AdminForm({ password, onSuccess }: AdminFormProps) {
-  const [formData, setFormData] = useState<EventInput>({
-    title: '',
-    description: '',
-    start_time: '',
-    end_time: '',
-    categories: ['other'],
-    location: '',
-    organizer: '',
-  })
+const defaultFormData: EventInput = {
+  title: '',
+  description: '',
+  start_time: '',
+  end_time: '',
+  categories: ['other'],
+  location: '',
+  organizer: '',
+}
+
+export default function AdminForm({ password, onSuccess, event, initialStart, initialEnd }: AdminFormProps) {
+  const [formData, setFormData] = useState<EventInput>(defaultFormData)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        title: event.title,
+        description: event.description ?? '',
+        start_time: toDatetimeLocal(event.start_time),
+        end_time: event.end_time ? toDatetimeLocal(event.end_time) : '',
+        categories: event.categories?.length ? event.categories : ['other'],
+        location: event.location ?? '',
+        organizer: event.organizer ?? '',
+      })
+    } else if (initialStart) {
+      setFormData((prev) => ({
+        ...prev,
+        start_time: dateToDatetimeLocal(initialStart),
+        end_time: initialEnd ? dateToDatetimeLocal(initialEnd) : '',
+      }))
+    } else {
+      setFormData(defaultFormData)
+    }
+  }, [event, initialStart, initialEnd])
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,9 +70,13 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
       end_time: endUTC || undefined,
     }
 
+    const isEdit = !!event?.id
+    const url = isEdit ? `/api/admin/events/${event.id}` : '/api/admin/events'
+    const method = isEdit ? 'PATCH' : 'POST'
+
     try {
-      const response = await fetch('/api/admin/events', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${password}`,
@@ -50,26 +84,14 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
         body: JSON.stringify(payload),
       })
 
-
       const data = await response.json()
 
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create event')
+        throw new Error(data.error || (isEdit ? 'Failed to update event' : 'Failed to create event'))
       }
 
-
       setSuccess(true)
-      setFormData({
-        title: '',
-        description: '',
-        start_time: '',
-        end_time: '',
-        categories: ['other'],
-        location: '',
-        organizer: '',
-      })
-     
+      setFormData(defaultFormData)
       setTimeout(() => {
         setSuccess(false)
         onSuccess()
@@ -233,7 +255,7 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
 
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          Event created successfully!
+          {event?.id ? 'Event updated successfully!' : 'Event created successfully!'}
         </div>
       )}
 
@@ -243,7 +265,13 @@ export default function AdminForm({ password, onSuccess }: AdminFormProps) {
         disabled={isSubmitting}
         className="w-full bg-ucla-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? 'Creating...' : 'Create Event'}
+        {isSubmitting
+          ? event?.id
+            ? 'Saving...'
+            : 'Creating...'
+          : event?.id
+            ? 'Update Event'
+            : 'Create Event'}
       </button>
     </form>
   )
