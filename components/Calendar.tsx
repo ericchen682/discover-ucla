@@ -6,6 +6,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Event } from '@/lib/types'
+import { eventToCalendarSegments } from '@/lib/dates'
 import { useState } from 'react'
 import EventCard from './EventCard'
 
@@ -35,14 +36,18 @@ export default function Calendar({ events }: CalendarProps) {
   const [date, setDate] = useState(new Date())
 
 
-  // Transform events to react-big-calendar format
-  const calendarEvents = events.map((event) => ({
-    id: event.id,
-    title: event.title,
-    start: new Date(event.start_time),
-    end: event.end_time ? new Date(event.end_time) : new Date(event.start_time),
-    resource: event,
-  }))
+  // Transform events to react-big-calendar format; split overnight events so they show on both days
+  const calendarEvents = events.flatMap((event) =>
+    eventToCalendarSegments(
+      {
+        id: event.id,
+        title: event.title,
+        start_time: event.start_time,
+        end_time: event.end_time ?? null,
+      },
+      event
+    )
+  )
 
 
   const handleSelectEvent = (event: any) => {

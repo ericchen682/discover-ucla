@@ -1,6 +1,6 @@
 import { Event } from '@/lib/types'
 import { CATEGORY_LABELS } from '@/lib/types'
-import { format } from 'date-fns'
+import { formatEventTimeRange } from '@/lib/dates'
 
 
 interface EventCardProps {
@@ -19,10 +19,7 @@ export default function EventCard({ event }: EventCardProps) {
       <div className="space-y-1 text-xs sm:text-sm">
         <div className="flex items-center gap-2">
           <span className="font-semibold">Date & Time:</span>
-          <span>
-            {format(startDate, 'PPP p')}
-            {endDate && ` - ${format(endDate, 'p')}`}
-          </span>
+          <span>{formatEventTimeRange(startDate, endDate)}</span>
         </div>
 
 

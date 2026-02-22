@@ -6,6 +6,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Event } from '@/lib/types'
+import { eventToCalendarSegments } from '@/lib/dates'
 import EventCard from './EventCard'
 import AdminForm from './AdminForm'
 
@@ -32,13 +33,17 @@ export default function AdminCalendar({ events, password, onEventsChange }: Admi
   const [showEditForm, setShowEditForm] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const calendarEvents = events.map((e) => ({
-    id: e.id,
-    title: e.title,
-    start: new Date(e.start_time),
-    end: e.end_time ? new Date(e.end_time) : new Date(e.start_time),
-    resource: e,
-  }))
+  const calendarEvents = events.flatMap((e) =>
+    eventToCalendarSegments(
+      {
+        id: e.id,
+        title: e.title,
+        start_time: e.start_time,
+        end_time: e.end_time ?? null,
+      },
+      e
+    )
+  )
 
   const handleSelectSlot = (slot: { start: Date; end: Date }) => {
     setSelectedEvent(null)
