@@ -1,9 +1,9 @@
 'use client'
 
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminForm from '@/components/AdminForm'
+import AdminCalendar from '@/components/AdminCalendar'
 import { Event } from '@/lib/types'
 import { format } from 'date-fns'
 import { CATEGORY_LABELS } from '@/lib/types'
@@ -119,6 +119,15 @@ export default function AdminPage() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
+        <section>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Calendar</h2>
+          <AdminCalendar
+            events={events}
+            password={password}
+            onEventsChange={fetchEvents}
+          />
+        </section>
+
         <section>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Upcoming Events</h2>
           {loadingEvents ? (
