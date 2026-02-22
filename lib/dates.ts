@@ -29,19 +29,27 @@ export function formatEventTimeRange(start: Date, end: Date | null): string {
   return `${format(start, 'PPP p')} – ${format(end, 'PPP p')}`
 }
 
-export interface CalendarSegment {
+export interface CalendarSegment<TResource = unknown> {
   id: string
   title: string
   start: Date
   end: Date
-  resource: unknown
+  resource: TResource
+}
+
+/** Minimal event shape needed for segment splitting */
+export type EventSegmentInput = {
+  id: string
+  title: string
+  start_time: string
+  end_time: string | null
 }
 
 /** Expand an event into 1 or 2 calendar segments so overnight events show on both days */
-export function eventToCalendarSegments<T extends { id: string; title: string; start_time: string; end_time: string | null }>(
-  event: T,
-  resource: T
-): CalendarSegment[] {
+export function eventToCalendarSegments<TResource>(
+  event: EventSegmentInput,
+  resource: TResource
+): CalendarSegment<TResource>[] {
   const start = new Date(event.start_time)
   const end = event.end_time ? new Date(event.end_time) : new Date(event.start_time)
   if (end <= start) {
