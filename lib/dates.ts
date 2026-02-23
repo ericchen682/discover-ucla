@@ -13,6 +13,72 @@ export function dateToDatetimeLocal(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+/** Round "HH:mm" to nearest 15 minutes (e.g. "18:32" -> "18:30") */
+export function roundTimeTo15Min(time: string): string {
+  const [h, m] = time.split(':').map(Number)
+  const totalMins = h * 60 + (m ?? 0)
+  const rounded = Math.round(totalMins / 15) * 15
+  const rh = Math.floor(rounded / 60) % 24
+  const rm = rounded % 60
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(rh)}:${pad(rm)}`
+}
+
+/** All 15-minute time options in a day ("00:00" through "23:45") */
+export const TIME_OPTIONS_15: string[] = (() => {
+  const out: string[] = []
+  for (let h = 0; h < 24; h++)
+    for (let m = 0; m < 60; m += 15)
+      out.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
+  return out
+})()
+
+/** Nearest 15-minute option for scroll/highlight when value is not in the dropdown (e.g. "06:20" -> "06:15") */
+export function getNearest15Min(time: string): string {
+  return roundTimeTo15Min(time)
+}
+
+/** Format "HH:mm" for dropdown label (e.g. "18:30" -> "6:30 PM") */
+export function formatTimeOptionLabel(time: string): string {
+  const d = new Date(`2000-01-01T${time}`)
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })
+}
+
+/**
+ * Parse a typed time string to "HH:mm" (24h). Returns null if invalid.
+ * Accepts e.g. "6:30 pm", "18:30", "6:30", "630", "9am".
+ */
+export function parseTimeInput(text: string): string | null {
+  const t = text.trim().toLowerCase()
+  if (!t) return null
+  const am = /\bam\b/.test(t) || /^(\d{1,2})\s*am\b/.test(t)
+  const pm = /\bpm\b/.test(t) || /^(\d{1,2})\s*pm\b/.test(t)
+  const withColon = /^(\d{1,2}):(\d{2})\s*(am|pm)?$/i.exec(t) || /^(\d{1,2}):(\d{2})$/.exec(t)
+  const noColon = /^(\d{1,2})\s*(am|pm)?$/i.exec(t) || /^(\d{2,4})$/.exec(t)
+  let hour: number
+  let minute: number
+  if (withColon) {
+    hour = parseInt(withColon[1], 10)
+    minute = parseInt(withColon[2], 10) || 0
+    if (pm && hour < 12) hour += 12
+    if (am && hour === 12) hour = 0
+  } else if (noColon) {
+    const v = noColon[1]
+    if (v.length <= 2) {
+      hour = parseInt(v, 10)
+      minute = 0
+    } else {
+      hour = parseInt(v.slice(0, -2), 10)
+      minute = parseInt(v.slice(-2), 10) || 0
+    }
+    if (pm && hour < 12) hour += 12
+    if (am && hour === 12) hour = 0
+  } else return null
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(hour)}:${pad(minute)}`
+}
+
 /** True if end is on a later calendar day than start (e.g. 11pm–1am) */
 export function isOvernightEvent(start: Date, end: Date): boolean {
   const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime()

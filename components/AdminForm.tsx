@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { EventInput, EventCategory, CATEGORIES, CATEGORY_LABELS, Event } from '@/lib/types'
 import { toDatetimeLocal, dateToDatetimeLocal } from '@/lib/dates'
+import TimePicker from '@/components/TimePicker'
 
 
 interface AdminFormProps {
@@ -35,20 +36,24 @@ export default function AdminForm({ password, onSuccess, event, initialStart, in
 
   useEffect(() => {
     if (event) {
+      const start = toDatetimeLocal(event.start_time)
+      const end = event.end_time ? toDatetimeLocal(event.end_time) : ''
       setFormData({
         title: event.title,
         description: event.description ?? '',
-        start_time: toDatetimeLocal(event.start_time),
-        end_time: event.end_time ? toDatetimeLocal(event.end_time) : '',
+        start_time: start || '',
+        end_time: end || '',
         categories: event.categories?.length ? event.categories : ['other'],
         location: event.location ?? '',
         organizer: event.organizer ?? '',
       })
     } else if (initialStart) {
+      const start = dateToDatetimeLocal(initialStart)
+      const end = initialEnd ? dateToDatetimeLocal(initialEnd) : ''
       setFormData((prev) => ({
         ...prev,
-        start_time: dateToDatetimeLocal(initialStart),
-        end_time: initialEnd ? dateToDatetimeLocal(initialEnd) : '',
+        start_time: start,
+        end_time: end || '',
       }))
     } else {
       setFormData(defaultFormData)
@@ -57,6 +62,9 @@ export default function AdminForm({ password, onSuccess, event, initialStart, in
 
 
   const handleSubmit = async (e: React.FormEvent) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7801/ingest/47e05ab7-47a2-4ca5-b184-af67d09df1bd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'98e593'},body:JSON.stringify({sessionId:'98e593',location:'AdminForm.tsx:handleSubmit',message:'Form submit triggered',data:{},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)
@@ -92,10 +100,8 @@ export default function AdminForm({ password, onSuccess, event, initialStart, in
 
       setSuccess(true)
       setFormData(defaultFormData)
-      setTimeout(() => {
-        setSuccess(false)
-        onSuccess()
-      }, 2000)
+      onSuccess()
+      setTimeout(() => setSuccess(false), 2000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -157,33 +163,61 @@ export default function AdminForm({ password, onSuccess, event, initialStart, in
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="start_time" className="block text-sm font-medium text-gray-700 mb-1">
-            Start Time *
+          <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-1">
+            Start Date & Time *
           </label>
-          <input
-            type="datetime-local"
-            id="start_time"
-            name="start_time"
-            required
-            value={formData.start_time}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ucla-blue"
-          />
+          <div className="flex flex-wrap gap-2 items-center">
+            <input
+              type="date"
+              id="start_date"
+              required
+              value={formData.start_time && formData.start_time.slice(0, 10) !== '1970-01-01' ? formData.start_time.slice(0, 10) : ''}
+              onChange={(e) => {
+                const date = e.target.value
+                const time = formData.start_time ? formData.start_time.slice(11, 16) : '09:00'
+                setFormData((prev) => ({ ...prev, start_time: date ? `${date}T${time}` : '' }))
+              }}
+              className="flex-1 min-w-[140px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ucla-blue"
+            />
+            <TimePicker
+              id="start_time"
+              aria-label="Start time"
+              value={formData.start_time ? formData.start_time.slice(11, 16) : '09:00'}
+              onChange={(time) => {
+                const datePart = formData.start_time?.slice(0, 10)
+                const date = datePart && datePart !== '1970-01-01' ? datePart : ''
+                setFormData((prev) => ({ ...prev, start_time: date ? `${date}T${time}` : `1970-01-01T${time}` }))
+              }}
+            />
+          </div>
         </div>
 
-
         <div>
-          <label htmlFor="end_time" className="block text-sm font-medium text-gray-700 mb-1">
-            End Time
+          <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 mb-1">
+            End Date & Time
           </label>
-          <input
-            type="datetime-local"
-            id="end_time"
-            name="end_time"
-            value={formData.end_time}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ucla-blue"
-          />
+          <div className="flex flex-wrap gap-2 items-center">
+            <input
+              type="date"
+              id="end_date"
+              value={formData.end_time ? formData.end_time.slice(0, 10) : ''}
+              onChange={(e) => {
+                const date = e.target.value
+                const time = formData.end_time ? formData.end_time.slice(11, 16) : '10:00'
+                setFormData((prev) => ({ ...prev, end_time: date ? `${date}T${time}` : '' }))
+              }}
+              className="flex-1 min-w-[140px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ucla-blue"
+            />
+            <TimePicker
+              id="end_time"
+              aria-label="End time"
+              value={formData.end_time ? formData.end_time.slice(11, 16) : '10:00'}
+              onChange={(time) => {
+                const date = formData.end_time ? formData.end_time.slice(0, 10) : formData.start_time?.slice(0, 10) ?? ''
+                setFormData((prev) => ({ ...prev, end_time: date ? `${date}T${time}` : '' }))
+              }}
+            />
+          </div>
         </div>
       </div>
 
