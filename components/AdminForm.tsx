@@ -62,9 +62,6 @@ export default function AdminForm({ password, onSuccess, event, initialStart, in
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7801/ingest/47e05ab7-47a2-4ca5-b184-af67d09df1bd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'98e593'},body:JSON.stringify({sessionId:'98e593',location:'AdminForm.tsx:handleSubmit',message:'Form submit triggered',data:{},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)

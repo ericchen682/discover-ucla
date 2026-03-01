@@ -29,10 +29,12 @@ export async function GET(request: NextRequest) {
       ? (categoriesParam.split(',') as EventCategory[]).filter(Boolean)
       : []
 
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
     const { data: rows, error } = await supabase
       .from('events')
       .select('*, event_categories(category)')
-      .gte('start_time', new Date().toISOString())
+      .gte('start_time', cutoff)
       .order('start_time', { ascending: true })
 
     if (error) {

@@ -32,10 +32,7 @@ export default function Home() {
     try {
       setLoading(true)
       const response = await fetch('/api/events')
-      // #region agent log
       const text = await response.text()
-      fetch('http://127.0.0.1:7801/ingest/47e05ab7-47a2-4ca5-b184-af67d09df1bd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e5e472'},body:JSON.stringify({sessionId:'e5e472',location:'app/page.tsx:fetchEvents',message:'GET /api/events response',data:{status:response.status,ok:response.ok,bodyLength:text.length,bodyPreview:text.slice(0,200)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       const data = text ? JSON.parse(text) : {}
 
       if (data.error) {

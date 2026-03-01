@@ -84,15 +84,12 @@ export default function TimePicker({
         onFocus={() => setIsOpen(true)}
         onBlur={handleBlur}
         onKeyDown={(e) => {
-          // #region agent log
           if (e.key === 'Enter') {
-            fetch('http://127.0.0.1:7801/ingest/47e05ab7-47a2-4ca5-b184-af67d09df1bd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'98e593'},body:JSON.stringify({sessionId:'98e593',location:'TimePicker.tsx:input onKeyDown',message:'Enter key in time input',data:{key:e.key},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
             e.preventDefault()
             e.stopPropagation()
             applyTypedTime()
             setIsOpen(false)
           }
-          // #endregion
         }}
         placeholder={placeholder}
         className="w-full min-w-[100px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ucla-blue bg-white"
